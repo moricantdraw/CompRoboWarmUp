@@ -3,6 +3,23 @@ from rclpy.node import Node  # generic Node class for interacting with ROS2
 from neato2_interfaces.msg import Bump  # local package call for a Bump type message format
 from geometry_msgs.msg import Twist  # ROS package call for a Twist type message format
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import tty
 import select
 import sys
