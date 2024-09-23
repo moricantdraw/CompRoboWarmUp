@@ -33,7 +33,7 @@ class NeatoPet(Node):
         # subscribes to laser scan data, calls process_scan to process it (qos to make getting realtime data better)
         self.create_subscription(LaserScan, 'scan', self.read_scan, qos_profile=qos_profile_sensor_data)
         #subscribes to bump sensor, call self.read_bump to read it
-        self.create_subscription(Bump, 'bump', self.read_bump, qos_profile=qos_profile_sensor_data)
+        #self.create_subscription(Bump, 'bump', self.read_bump, qos_profile=qos_profile_sensor_data)
         
         # movement parameters 
         #velocity limits
@@ -44,21 +44,24 @@ class NeatoPet(Node):
         self.kp_distance = 0.5
 
         #person stuff
+        self.range_threshold = 4
         self.target_distance = 1.0
         self.angle_of_legs = 0
         self.distance_from_person = 0
+        self.size_min = 0.01
+        self.size_max = 1.0
 
         #Stopping 
         self.stop = False
         
     #reading functions 
 
-    def read_scan(self, data):
+    def read_scan(self, data: LaserScan):
         self.ranges = data.ranges
         self.locate_person()
 
-    def read_bump(self,data):
-        self.stop = any([data.leftFront, data.leftSide, data.rightFront, data.rightSide])  
+    #def read_bump(self, data):
+        #self.stop = any([data.leftFront, data.leftSide, data.rightFront, data.rightSide])  
     
     def locate_person(self):
         #storage bucket for legs
@@ -72,8 +75,8 @@ class NeatoPet(Node):
                 object_size_array = self.detect_leg_angle(angle)
                 object_array.extend(object_size_array)
             prev_range = current_range
-    #calls function to calculate leg distance once legs are identified 
-    self.calculate_leg_position(object_array)
+            #calls function to calculate leg distance once legs are identified 
+            self.calculate_leg_position(object_array)
     
     def detect_leg_angle(self, angle):
         #MATH! for good leg sizes!!! 
@@ -97,11 +100,11 @@ class NeatoPet(Node):
         
     def Move(self):
         #if bump, stops 
-        if self.stop:
+        ''' if self.stop:
             self.vel_msg.linear.x = 0
             self.vel_msg.angular.z = 0
             return
-        
+        '''
         # where is the person?
         error_distance = self.distance_from_person - self.target_distance
         error_theta = self.angle_of_legs
@@ -149,7 +152,7 @@ class NeatoPet(Node):
         
     def run_loop(self):
         if self.ranges is not None:
-            self.move()
+            self.Move()
             self.vel_pub.publish(self.vel_msg)
             self.draw_marker()
 
