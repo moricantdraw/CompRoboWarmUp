@@ -35,6 +35,8 @@ class NeatoPet(Node):
         #subscribes to bump sensor, call self.read_bump to read it
         #self.create_subscription(Bump, 'bump', self.read_bump, qos_profile=qos_profile_sensor_data)
         
+        self.ranges = None
+
         # movement parameters 
         #velocity limits
         self.linear_vel_limit = 0.2
@@ -45,7 +47,7 @@ class NeatoPet(Node):
 
         #person stuff
         self.range_threshold = 4
-        self.target_distance = 1.0
+        self.target_distance = 0.2
         self.angle_of_legs = 0
         self.distance_from_person = 0
         self.size_min = 0.01
@@ -68,10 +70,10 @@ class NeatoPet(Node):
         object_array = []
         prev_range = 0
         #looking for legs
-        for angle in range(-45, 45):
+        for angle in range(-90, 90):
             current_range = self.ranges[angle]
             #establishing sudden changes in distance as a leg like quality that merrits futher inspection 
-            if current_range != 0 and prev_range - current_range > self.range_threshold:
+            if current_range != 0 and not math.isinf(current_range) and current_range < 1.0 and prev_range - current_range > self.range_threshold:
                 object_size_array = self.detect_leg_angle(angle)
                 object_array.extend(object_size_array)
             prev_range = current_range
@@ -94,6 +96,7 @@ class NeatoPet(Node):
         if len(object_array) > 0:
             self.angle_of_legs = sum([obj[0] for obj in object_array]) / len(object_array)
             self.distance_from_person = sum([obj[1] for obj in object_array]) / len(object_array)
+            print(f"distance from person: {self.distance_from_person}")
         else:
             self.angle_of_legs = 0
             self.distance_from_person = self.target_distance
@@ -141,8 +144,8 @@ class NeatoPet(Node):
         self.marker_robot = Marker()
         self.marker_robot.header.frame_id = "base_link"
         self.marker_robot.type = Marker.SPHERE
-        self.marker_robot.pose.position.x = 0
-        self.marker_robot.pose.position.y = 0
+        self.marker_robot.pose.position.x = 0.0
+        self.marker_robot.pose.position.y = 0.0
         self.marker_robot.scale.x = 0.2
         self.marker_robot.scale.y = 0.2
         self.marker_robot.scale.z = 0.2

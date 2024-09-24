@@ -4,22 +4,6 @@ from neato2_interfaces.msg import Bump  # local package call for a Bump type mes
 from geometry_msgs.msg import Twist  # ROS package call for a Twist type message format
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import tty
 import select
 import sys
