@@ -21,11 +21,11 @@ class NeatoPet(Node):
 
         #publishers 
 
-        #velocity comands to control robot
+        #velocity comands to control pet
         self.vel_pub = self.create_publisher(Twist, 'cmd_vel', 10)
         # marker that represnts person 
         self.person_marker_pub = self.create_publisher(Marker, 'Person_Marker', 10)
-        # marker that represnts robot 
+        # marker that represnts pet 
         self.pet_marker_pub = self.create_publisher(Marker, 'Pet_Marker', 10)
 
         #subscribers
@@ -65,7 +65,8 @@ class NeatoPet(Node):
     def read_scan(self, data: LaserScan):
         self.ranges = data.ranges
         self.locate_person()
-
+        
+    #What if he doesn't want to stop? Maybe he wants to zoom 
     #def read_bump(self, data):
         #self.stop = any([data.leftFront, data.leftSide, data.rightFront, data.rightSide])  
     
@@ -131,7 +132,6 @@ class NeatoPet(Node):
     
     
     def draw_marker(self):
-    #we can't fucking talk about it. I know this is the worst way to do this but it's how it's getting done. 
     #pretenting the legs are a cube at estimated position of person 
     #pretending robot is a sphere. Everyone wants a pet sphere 
         self.marker = Marker()

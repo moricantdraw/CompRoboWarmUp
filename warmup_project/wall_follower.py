@@ -1,8 +1,8 @@
-import rclpy  # convenience python library for interacting with ROS2
+import rclpy  
 import math
-from rclpy.node import Node  # generic Node class for interacting with ROS2
+from rclpy.node import Node  
 from rclpy.qos import qos_profile_sensor_data
-from geometry_msgs.msg import Twist  # ROS package call for a Twist type message format
+from geometry_msgs.msg import Twist  
 from neato2_interfaces.msg import Bump
 from sensor_msgs.msg import LaserScan
 
@@ -13,7 +13,7 @@ class WallFollowingNode(Node):
         # Timer to regularly run the loop
         self.create_timer(0.1, self.run_loop)
 
-        # Subscription to the LaserScan topic
+        # Subscription to LaserScan topic
         self.create_subscription(LaserScan, 'scan', self.process_scan, qos_profile=qos_profile_sensor_data)
 
         # Publisher for velocity commands
@@ -33,7 +33,7 @@ class WallFollowingNode(Node):
         self.good_scan1 = None
         self.good_scan2 = None
 
-        # Constants for control
+        # Constants for control--probably bad
         self.Kp_distance = 1.0
         self.target_distance = 1.2
         self.closest_distance = self.target_distance
@@ -60,7 +60,7 @@ class WallFollowingNode(Node):
                 break
 
         if self.good_angle1 != None:
-        # Calculate the distance to the wall using specific angles (240° and 300°)
+        # Calculate distance to the wall using specific angles (240° and 300°)
             x1 = self.good_scan1* math.cos(math.radians(270 - self.good_angle1))
             y1 = -1*self.good_scan1* math.sin(math.radians(270 - self.good_angle1))
             x2 = self.good_scan2* math.cos(math.radians(self.good_angle2 - 270))
@@ -71,11 +71,11 @@ class WallFollowingNode(Node):
                 self.m = (y1 - y2) / (x1 - x2)
                 self.b = y1 - self.m * x1
 
-            # If the slope isn't zero, calculate the angle relative to the wall
+            # If slope isn't zero, calculate angle relative to the wall
             if self.m != 0:
                 self.theta = math.degrees(math.atan(1 / self.m))
 
-            # Calculate the closest distance to the wall
+            # Calculate  closest distance to the wall
             self.closest_distance = abs(self.b) / math.sqrt(1 + self.m * self.m)
 
     def compute_velocity_command(self):
@@ -93,7 +93,7 @@ class WallFollowingNode(Node):
             # Target angular velocity based on distance error
             angular_vel = error_distance * self.Kp_distance
 
-            # Set velocity based on control laws
+            # Set velocity based on control laws-- probably unnecessary 
             msg.linear.x = self.linear_vel
             print(f"linear vel: {self.linear_vel}")
             msg.angular.z = angular_vel
@@ -101,7 +101,7 @@ class WallFollowingNode(Node):
         return msg
 
     def run_loop(self):
-        # Calculate the velocity command and publish it
+        # Calculate velocity command and publish 
         msg = self.compute_velocity_command()
         self.vel_pub.publish(msg)
 
