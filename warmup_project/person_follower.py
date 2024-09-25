@@ -55,6 +55,10 @@ class NeatoPet(Node):
 
         #Stopping 
         self.stop = False
+
+        #markers
+        self.marker_robot = Marker()
+        self.marker = Marker()
         
     #reading functions 
 
@@ -89,6 +93,7 @@ class NeatoPet(Node):
             if self.size_min < size < self.size_max:
                 #leg size information added to leg bucket 
                 object_array.append([(angle + angle2) / 2.0, current_range2])
+
         return object_array
 
 
@@ -131,7 +136,9 @@ class NeatoPet(Node):
     #pretending robot is a sphere. Everyone wants a pet sphere 
         self.marker = Marker()
         self.marker.header.frame_id = "base_link"
+        self.marker.id = 1
         self.marker.type = Marker.CUBE
+        self.marker.action = Marker.ADD
         self.marker.pose.position.x = math.cos(math.radians(self.angle_of_legs)) * self.distance_from_person
         self.marker.pose.position.y = math.sin(math.radians(self.angle_of_legs)) * self.distance_from_person
         self.marker.scale.x = 0.2
@@ -143,7 +150,9 @@ class NeatoPet(Node):
 
         self.marker_robot = Marker()
         self.marker_robot.header.frame_id = "base_link"
+        self.marker.id = 0
         self.marker_robot.type = Marker.SPHERE
+        self.marker.action = Marker.ADD
         self.marker_robot.pose.position.x = 0.0
         self.marker_robot.pose.position.y = 0.0
         self.marker_robot.scale.x = 0.2
@@ -152,12 +161,14 @@ class NeatoPet(Node):
         self.marker_robot.color.a = 1.0
         self.marker_robot.color.b = 1.0
         self.pet_marker_pub.publish(self.pet_marker)
-        
+    
     def run_loop(self):
         if self.ranges is not None:
             self.Move()
             self.vel_pub.publish(self.vel_msg)
             self.draw_marker()
+            print(f"marker position x {math.cos(math.radians(self.angle_of_legs)) * self.distance_from_person}")
+            print(f"marker position y {math.sin(math.radians(self.angle_of_legs)) * self.distance_from_person}")
 
 def main(args=None):
     rclpy.init(args=args)
